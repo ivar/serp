@@ -22,8 +22,10 @@ module Serp
     page = agent.submit(google_form, google_form.buttons.first)
     (1..pages).each do |pn|
       (page/"li.g h3.r > a").each do |link|
-        href = link.attribute('href').value
-        results << parse_href(link.attribute('href').value) if href =~ /^\/url/ && !(href =~ /plus.google.com/)
+        if link.attribute("class").to_s != "sla" # filter out sub links
+          href = link.attribute('href').value
+          results << parse_href(link.attribute('href').value) if href =~ /^\/url/ && !(href =~ /plus.google.com/)
+        end
       end
       page = page.link_with(:text => "#{pn+1}", :class => 'fl').click if pn < pages
     end
